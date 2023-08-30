@@ -1,6 +1,8 @@
+#include <vector>
 #include <iostream>
 #include <cstdlib>
 #include <boost/process.hpp>
+#include <libbutl/process.hxx>
 
 int main (int argc, char* argv[])
 {
@@ -65,6 +67,28 @@ int main (int argc, char* argv[])
         bp::child child_process{command_to_run, bp::std_out > stdout, bp::std_err > stderr, bp::std_in < stdin};
         child_process.wait();
     }
+
+    if(command == "boost.process-spawn")
+    {
+        namespace bp = boost::process;
+        std::vector<std::string_view> command_args;
+        boost::algorithm::split(command_args, command_to_run, boost::algorithm::is_any_of(" "));
+        const auto program_to_run = bp::search_path(command_args[0]);
+        const std::vector<std::string_view> args(std::next(command_args.begin()), command_args.end());
+        bp::spawn(program_to_run, bp::args(args) , bp::std_out > stdout, bp::std_err > stderr, bp::std_in < stdin);
+    }
+
+    if(command == "libbutl.process")
+    {
+        std::vector<std::string> command_args;
+        boost::algorithm::split(command_args, command_to_run, boost::algorithm::is_any_of(" "));
+        std::vector<const char *> command_args_c;
+        for(const auto& str : command_args)
+            command_args_c.push_back(str.c_str());
+        butl::process child_process{command_args_c}; //, 0, -1, 2};
+        child_process.wait();
+    }
+
 
     return EXIT_FAILURE;
 }

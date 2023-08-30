@@ -1,5 +1,5 @@
 libs =
-import libs += libboost-process%lib{boost_process}
+import libs += libboost-process%lib{boost_process} libboost-algorithm%lib{boost_algorithm} libbutl%lib{butl}
 
 ./: exe{forward} doc{README.md} manifest
 
